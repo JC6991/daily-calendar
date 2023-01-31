@@ -6,34 +6,86 @@ $(document).ready(function() {
 
     }, 1000);
 
-    // create an array for the business hours in a day
-    const businessHours = ['9am', '10am', '11m', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm'];
-    
+    // start business hours at 9
+    let businessHours = moment().hour(9).format('h');
+    console.log(businessHours);       
 
-    businessHours.forEach(function (hour) {
-        // create rtime block and append to container div
+    // businessHours.forEach(function (hour) {
+    for(i = 9; i < 18; i++) {
+        // create time block and append to container div
         let timeBlock = $('<div>');        
-        timeBlock.addClass('time-block row');                
+        timeBlock.addClass('time-block row');
+        timeBlock.attr('id', i);
         $('.container').append(timeBlock);
 
         // create time div (2 columns) and append to time block
         let hourOfDay = $('<div>');
-        hourOfDay.addClass('hour col-2')
-        hourOfDay.text(hour);
-        timeBlock.append(hourOfDay);
+        hourOfDay.addClass('hour col-1')        
+        timeBlock.append(hourOfDay);        
 
         // create text area and append to time block
         let textArea = $('<textarea>');
-        textArea.addClass('col-8')        
+        textArea.addClass('col-10')   
+        textArea.attr('input');
         timeBlock.append(textArea);
 
         // create save button
-        let saveButton = $('<button>');
-        saveButton.addClass('saveBtn col-2');
+        let saveButton = $('<button><i class="fas fa-save"></i></button>');
+        saveButton.addClass('saveBtn col-1');
         timeBlock.append(saveButton);
+    };
 
-    }) 
+    $('.hour').each(function() {        
+        $(this).text(businessHours + ":00");
+        console.log('bus hour: ', businessHours);
 
-    $('.container').children('p').addClass('hour');
+        let timeCheck = parseInt($(this).parent().attr('id'));
+        console.log('id: ', timeCheck);
+        console.log(typeof timeCheck);
+
+        businessHours++;
+        // businessHours.add(1, 'h').format('k');
+        // console.log(businessHours);
+        
+        // get the current hour of the day
+        let currentHour = parseInt(moment().format('k'));
+        console.log('current: ', currentHour);
+        console.log(typeof currentHour);
+        
+        if(currentHour < timeCheck) { 
+            $(this).next().addClass('future');
+        }
+        else if(currentHour === timeCheck) { 
+            $(this).next().addClass('present');
+        }
+        else if(currentHour > timeCheck){ 
+            $(this).next().addClass('past');
+        }        
+
+        // let getData = $(this).parent().attr('id')
+        // console.log("Test: ", getData);
+        // // $(this).next() = localStorage.getItem(getData);
+    }); 
+
+  
+
+    // save user input in local storage
+    $('.saveBtn').on('click', function() {
+        let userInput = {
+            time: "",
+            input: "",
+         }; 
+
+        // get the time by targeting the id of the timeblock div        
+        userInput.time = $(this).parent().attr('id');
+        // set the user input to the input variable
+        userInput.input = $(this).prev().val();
+        
+        // store user input in local storage
+        let savedData = $(this).parent().attr('id');
+        localStorage.setItem(savedData, JSON.stringify(userInput));
+    });
+
+    // getCalendarInput();
 
 });
